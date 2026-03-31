@@ -13,10 +13,19 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: 'http://localhost:3000', methods: ['GET', 'POST'] } });
 
-// Middleware
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://genz-hub.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+
+// Health check
+app.get('/', (req, res) => res.json({ message: 'GenZ Hub API is running ✅', status: 'OK' }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
