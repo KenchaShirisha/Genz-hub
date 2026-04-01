@@ -3,6 +3,16 @@ import api from '../../utils/api';
 import { CODING_CATEGORIES, LANGUAGES, DIFFICULTIES } from '../../utils/helpers';
 import Loader from '../Common/Loader';
 
+function useWidth() {
+  const [w, setW] = useState(window.innerWidth);
+  useEffect(() => {
+    const fn = () => setW(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return w;
+}
+
 export default function CodingModule() {
   const [problems, setProblems] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -12,10 +22,11 @@ export default function CodingModule() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const width = useWidth();
+  const isMobile = width < 768;
 
-  useEffect(() => {
-    fetchProblems();
-  }, [filters]);
+  useEffect(() => { fetchProblems(); }, [filters]);
 
   const fetchProblems = async () => {
     setLoading(true);
@@ -34,6 +45,7 @@ export default function CodingModule() {
     setSelected(p);
     setCode(p.starterCode?.[language] || '// Write your solution here');
     setResult(null);
+    if (isMobile) setShowSidebar(false);
   };
 
   const handleLanguageChange = (lang) => {
@@ -52,127 +64,111 @@ export default function CodingModule() {
   };
 
   return (
-    <div style={styles.page} className="coding-layout">
-      <div style={styles.sidebar} className="coding-sidebar">
-        <h2 style={styles.title}>💻 Coding Practice</h2>
-        <div style={styles.filters}>
-          <input placeholder="🔍 Search problems..." value={filters.search}
-            onChange={e => setFilters({ ...filters, search: e.target.value })} style={{ marginBottom: 8 }} />
-          <select value={filters.category} onChange={e => setFilters({ ...filters, category: e.target.value })}>
-            <option value="">All Categories</option>
-            {CODING_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-          </select>
-          <select value={filters.difficulty} onChange={e => setFilters({ ...filters, difficulty: e.target.value })} style={{ marginTop: 8 }}>
-            <option value="">All Difficulties</option>
-            {DIFFICULTIES.map(d => <option key={d}>{d}</option>)}
-          </select>
-        </div>
-        {loading ? <Loader text="Loading problems..." /> : (
-          <div style={styles.problemList}>
-            {problems.map((p, i) => (
-              <div key={p._id} onClick={() => selectProblem(p)}
-                style={{ ...styles.problemItem, ...(selected?._id === p._id ? styles.problemActive : {}) }}>
-                <span style={{ color: 'var(--text2)', fontSize: 12 }}>{i + 1}.</span>
-                <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{p.title}</span>
-                <span className={`badge badge-${p.difficulty.toLowerCase()}`}>{p.difficulty}</span>
-              </div>
-            ))}
-            {problems.length === 0 && <p style={{ color: 'var(--text2)', fontSize: 13, padding: 16 }}>No problems found</p>}
-          </div>
-        )}
-      </div>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', height: isMobile ? 'auto' : 'calc(100vh - 3.75rem)', overflow: isMobile ? 'visible' : 'hidden' }}>
 
-      <div style={styles.editor}>
-        {!selected ? (
-          <div style={styles.empty}>
-            <div style={{ fontSize: 60 }}>💻</div>
-            <h3>Select a problem to start coding</h3>
-            <p style={{ color: 'var(--text2)' }}>Choose from {problems.length} problems</p>
+      {/* Sidebar */}
+      {(!isMobile || showSidebar) && (
+        <div style={{ width: isMobile ? '100%' : '18rem', borderRight: isMobile ? 'none' : '1px solid var(--border)', borderBottom: isMobile ? '1px solid var(--border)' : 'none', display: 'flex', flexDirection: 'column', background: 'var(--bg2)', flexShrink: 0, maxHeight: isMobile ? '22rem' : 'none', overflowY: 'auto' }}>
+          <h2 style={{ padding: '1rem 1rem 0.5rem', fontSize: '1rem', fontWeight: 700 }}>💻 Coding Practice</h2>
+          <div style={{ padding: '0 0.75rem 0.75rem' }}>
+            <input placeholder="🔍 Search problems..." value={filters.search}
+              onChange={e => setFilters({ ...filters, search: e.target.value })} style={{ marginBottom: 8 }} />
+            <select value={filters.category} onChange={e => setFilters({ ...filters, category: e.target.value })}>
+              <option value="">All Categories</option>
+              {CODING_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            </select>
+            <select value={filters.difficulty} onChange={e => setFilters({ ...filters, difficulty: e.target.value })} style={{ marginTop: 8 }}>
+              <option value="">All Difficulties</option>
+              {DIFFICULTIES.map(d => <option key={d}>{d}</option>)}
+            </select>
           </div>
-        ) : (
-          <>
-            <div style={styles.problemHeader}>
-              <div>
-                <h2 style={{ fontSize: 20, fontWeight: 700 }}>{selected.title}</h2>
-                <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-                  <span className={`badge badge-${selected.difficulty.toLowerCase()}`}>{selected.difficulty}</span>
-                  <span className="tag">{selected.category}</span>
-                  <span style={{ fontSize: 12, color: 'var(--text2)' }}>⭐ {selected.points} pts</span>
+          {loading ? <Loader text="Loading..." /> : (
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 0.5rem 0.5rem' }}>
+              {problems.map((p, i) => (
+                <div key={p._id} onClick={() => selectProblem(p)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0.625rem 0.5rem', borderRadius: 8, cursor: 'pointer', marginBottom: 2, background: selected?._id === p._id ? 'var(--bg3)' : 'transparent', borderLeft: selected?._id === p._id ? '3px solid var(--primary)' : '3px solid transparent' }}>
+                  <span style={{ color: 'var(--text2)', fontSize: '0.75rem' }}>{i + 1}.</span>
+                  <span style={{ flex: 1, fontSize: '0.875rem', fontWeight: 500 }}>{p.title}</span>
+                  <span className={`badge badge-${p.difficulty.toLowerCase()}`}>{p.difficulty}</span>
+                </div>
+              ))}
+              {problems.length === 0 && <p style={{ color: 'var(--text2)', fontSize: '0.8rem', padding: '1rem' }}>No problems found</p>}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Editor */}
+      {(!isMobile || !showSidebar) && (
+        <div style={{ flex: 1, overflow: 'auto', padding: isMobile ? '1rem' : '1.25rem', background: 'var(--bg)' }}>
+          {isMobile && (
+            <button onClick={() => setShowSidebar(true)} className="btn btn-outline" style={{ marginBottom: '1rem', fontSize: '0.8rem' }}>
+              ← Back to Problems
+            </button>
+          )}
+          {!selected ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: isMobile ? '60vh' : '100%', gap: 12, color: 'var(--text2)' }}>
+              <div style={{ fontSize: '3.5rem' }}>💻</div>
+              <h3>Select a problem to start coding</h3>
+              <p>Choose from {problems.length} problems</p>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: 700 }}>{selected.title}</h2>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+                    <span className={`badge badge-${selected.difficulty.toLowerCase()}`}>{selected.difficulty}</span>
+                    <span className="tag">{selected.category}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>⭐ {selected.points} pts</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <select value={language} onChange={e => handleLanguageChange(e.target.value)} style={{ width: 'auto' }}>
+                    {(selected.supportedLanguages || LANGUAGES).map(l => <option key={l}>{l}</option>)}
+                  </select>
+                  <button className="btn btn-primary" onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? '⏳ Running...' : '▶ Run & Submit'}
+                  </button>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <select value={language} onChange={e => handleLanguageChange(e.target.value)} style={{ width: 'auto' }}>
-                  {(selected.supportedLanguages || LANGUAGES).map(l => <option key={l}>{l}</option>)}
-                </select>
-                <button className="btn btn-primary" onClick={handleSubmit} disabled={submitting}>
-                  {submitting ? '⏳ Running...' : '▶ Run & Submit'}
-                </button>
-              </div>
-            </div>
 
-            <div style={styles.split}>
-              <div style={styles.description}>
-                <p style={{ lineHeight: 1.7, color: 'var(--text2)' }}>{selected.description}</p>
-                {selected.examples?.map((ex, i) => (
-                  <div key={i} style={styles.example}>
-                    <strong>Example {i + 1}:</strong>
-                    <div style={styles.exCode}><b>Input:</b> {ex.input}</div>
-                    <div style={styles.exCode}><b>Output:</b> {ex.output}</div>
-                    {ex.explanation && <div style={{ fontSize: 13, color: 'var(--text2)', marginTop: 4 }}>💡 {ex.explanation}</div>}
-                  </div>
-                ))}
-                {selected.constraints?.length > 0 && (
-                  <div style={{ marginTop: 16 }}>
-                    <strong style={{ fontSize: 13 }}>Constraints:</strong>
-                    {selected.constraints.map((c, i) => <div key={i} style={{ fontSize: 12, color: 'var(--text2)', marginTop: 3 }}>• {c}</div>)}
-                  </div>
-                )}
-              </div>
-
-              <div style={{ flex: 1 }}>
-                <textarea className="code-editor" value={code} onChange={e => setCode(e.target.value)}
-                  spellCheck={false} style={{ minHeight: 350 }} />
-                {result && (
-                  <div style={{ ...styles.result, background: result.error ? '#fee2e2' : result.result?.status === 'Accepted' ? '#d1fae5' : '#fef3c7' }}>
-                    {result.error ? (
-                      <span style={{ color: '#991b1b' }}>❌ {result.error}</span>
-                    ) : (
-                      <div>
-                        <div style={{ fontWeight: 700, color: result.result?.status === 'Accepted' ? '#065f46' : '#92400e' }}>
-                          {result.result?.status === 'Accepted' ? '✅' : '⚠️'} {result.result?.status}
+              <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: isMobile ? '100%' : '17.5rem' }}>
+                  <p style={{ lineHeight: 1.7, color: 'var(--text2)', fontSize: '0.9rem' }}>{selected.description}</p>
+                  {selected.examples?.map((ex, i) => (
+                    <div key={i} style={{ background: 'var(--bg3)', borderRadius: 8, padding: '0.75rem', marginTop: '0.75rem', fontSize: '0.8rem' }}>
+                      <strong>Example {i + 1}:</strong>
+                      <div style={{ fontFamily: 'monospace', marginTop: 4 }}><b>Input:</b> {ex.input}</div>
+                      <div style={{ fontFamily: 'monospace', marginTop: 2 }}><b>Output:</b> {ex.output}</div>
+                      {ex.explanation && <div style={{ fontSize: '0.75rem', color: 'var(--text2)', marginTop: 4 }}>💡 {ex.explanation}</div>}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ flex: 1, minWidth: isMobile ? '100%' : '17.5rem' }}>
+                  <textarea className="code-editor" value={code} onChange={e => setCode(e.target.value)}
+                    spellCheck={false} style={{ minHeight: isMobile ? '12rem' : '22rem' }} />
+                  {result && (
+                    <div style={{ marginTop: '0.75rem', padding: '0.875rem', borderRadius: 8, fontSize: '0.875rem', background: result.error ? '#fee2e2' : result.result?.status === 'Accepted' ? '#d1fae5' : '#fef3c7' }}>
+                      {result.error ? <span style={{ color: '#991b1b' }}>❌ {result.error}</span> : (
+                        <div>
+                          <div style={{ fontWeight: 700, color: result.result?.status === 'Accepted' ? '#065f46' : '#92400e' }}>
+                            {result.result?.status === 'Accepted' ? '✅' : '⚠️'} {result.result?.status}
+                          </div>
+                          <div style={{ fontSize: '0.8rem', marginTop: 4, color: 'var(--text2)' }}>
+                            ⏱ {result.result?.runtime} | 💾 {result.result?.memory}
+                            {!result.alreadySolved && result.progress && <span style={{ marginLeft: 8 }}>• +{result.progress.points} pts</span>}
+                          </div>
                         </div>
-                        <div style={{ fontSize: 13, marginTop: 4, color: 'var(--text2)' }}>
-                          ⏱ {result.result?.runtime} | 💾 {result.result?.memory}
-                          {result.alreadySolved && <span style={{ marginLeft: 8 }}>• Already solved</span>}
-                          {!result.alreadySolved && result.progress && <span style={{ marginLeft: 8 }}>• +{result.progress.points} pts</span>}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
-
-const styles = {
-  page: {},
-  sidebar: { display: 'flex', flexDirection: 'column' },
-  title: { padding: '16px 16px 8px', fontSize: 16, fontWeight: 700 },
-  filters: { padding: '0 12px 12px' },
-  problemList: { flex: 1, overflowY: 'auto', padding: '0 8px 8px' },
-  problemItem: { display: 'flex', alignItems: 'center', gap: 8, padding: '10px 8px', borderRadius: 8, cursor: 'pointer', marginBottom: 2, transition: 'background 0.15s' },
-  problemActive: { background: 'var(--bg3)', borderLeft: '3px solid var(--primary)' },
-  editor: { flex: 1, overflow: 'auto', padding: 20, background: 'var(--bg)' },
-  empty: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, color: 'var(--text2)' },
-  problemHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 },
-  split: { display: 'flex', gap: 20, flexWrap: 'wrap' },
-  description: { flex: 1, minWidth: 280 },
-  example: { background: 'var(--bg3)', borderRadius: 8, padding: 12, marginTop: 12, fontSize: 13 },
-  exCode: { fontFamily: 'monospace', marginTop: 4, color: 'var(--text)' },
-  result: { marginTop: 12, padding: 14, borderRadius: 8, fontSize: 14 }
-};

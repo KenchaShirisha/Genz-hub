@@ -29,7 +29,7 @@
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { font-size: 16px; }
+html { font-size: 16px; overflow-x: hidden; }
 
 body {
   font-family: 'Inter', sans-serif;
@@ -38,6 +38,7 @@ body {
   transition: background 0.3s, color 0.3s;
   min-height: 100vh;
   overflow-x: hidden;
+  width: 100%;
 }
 
 a { text-decoration: none; color: inherit; }

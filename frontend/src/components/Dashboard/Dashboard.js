@@ -5,10 +5,22 @@ import api from '../../utils/api';
 import { calcProgress, CATEGORIES } from '../../utils/helpers';
 import Loader from '../Common/Loader';
 
+function useWidth() {
+  const [w, setW] = useState(window.innerWidth);
+  useEffect(() => {
+    const fn = () => setW(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return w;
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [leaderRank, setLeaderRank] = useState(null);
   const [loading, setLoading] = useState(true);
+  const width = useWidth();
+  const isMobile = width < 768;
 
   useEffect(() => {
     api.get('/leaderboard').then(res => {
@@ -39,43 +51,47 @@ export default function Dashboard() {
     { title: '📓 Notes', desc: 'Save your study notes', link: '/notes', color: '#8b5cf6' },
   ];
 
+  const cols = isMobile ? '1fr' : width < 1024 ? '1fr 1fr' : '1fr 1fr 1fr 1fr';
+  const cols3 = isMobile ? '1fr' : width < 1024 ? '1fr 1fr' : '1fr 1fr 1fr';
+
   return (
-    <div style={styles.page}>
-      <div style={styles.welcome}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: isMobile ? '1rem' : '1.5rem 1rem' }}>
+      {/* Welcome */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <h1 style={styles.greeting}>Hey, {user?.name?.split(' ')[0]} 👋</h1>
-          <p style={{ color: 'var(--text2)', marginTop: 4 }}>Keep grinding. Placement season is on! 🔥</p>
+          <h1 style={{ fontSize: isMobile ? '1.4rem' : '1.75rem', fontWeight: 800 }}>Hey, {user?.name?.split(' ')[0]} 👋</h1>
+          <p style={{ color: 'var(--text2)', marginTop: 4, fontSize: '0.9rem' }}>Keep grinding. Placement season is on! 🔥</p>
         </div>
-        <div style={styles.streak}>🔥 {p.streak || 0} day streak</div>
+        <div style={{ background: 'var(--bg3)', padding: '0.5rem 1rem', borderRadius: 20, fontWeight: 700, fontSize: '0.875rem', border: '1px solid var(--border)' }}>
+          🔥 {p.streak || 0} day streak
+        </div>
       </div>
 
-      <div className="grid-4" style={{ marginBottom: 24 }}>
+      {/* Stats grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '1rem', marginBottom: '1.5rem' }}>
         {stats.map(s => (
-          <Link to={s.link} key={s.label} className="card" style={{ ...styles.statCard, borderTop: `3px solid ${s.color}` }}>
-            <div style={{ fontSize: 28 }}>{s.icon}</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)', marginTop: 2 }}>{s.label}</div>
+          <Link to={s.link} key={s.label} className="card" style={{ textAlign: 'center', padding: '1.25rem', borderTop: `3px solid ${s.color}`, cursor: 'pointer' }}>
+            <div style={{ fontSize: '1.75rem' }}>{s.icon}</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text2)', marginTop: 2 }}>{s.label}</div>
           </Link>
         ))}
       </div>
 
-      <div className="card" style={{ marginBottom: 24 }}>
-        <h3 style={styles.sectionTitle}>📊 Interview Progress</h3>
-        <div style={{ marginTop: 12 }}>
-          <div className="flex-between" style={{ marginBottom: 6 }}>
-            <span style={{ fontSize: 13, color: 'var(--text2)' }}>Overall ({interviewDone}/{totalInterviewQ})</span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--primary)' }}>{calcProgress(interviewDone, totalInterviewQ)}%</span>
-          </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${calcProgress(interviewDone, totalInterviewQ)}%` }} />
-          </div>
+      {/* Interview Progress */}
+      <div className="card" style={{ marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>📊 Interview Progress</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text2)' }}>Overall ({interviewDone}/{totalInterviewQ})</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary)' }}>{calcProgress(interviewDone, totalInterviewQ)}%</span>
         </div>
-        <div className="grid-3" style={{ marginTop: 16 }}>
+        <div className="progress-bar"><div className="progress-fill" style={{ width: `${calcProgress(interviewDone, totalInterviewQ)}%` }} /></div>
+        <div style={{ display: 'grid', gridTemplateColumns: cols3, gap: '0.75rem', marginTop: '1rem' }}>
           {[...CATEGORIES.web, ...CATEGORIES.programming].map(cat => {
             const done = p.interview?.categories?.[cat] || 0;
             return (
-              <div key={cat} style={{ fontSize: 12 }}>
-                <div className="flex-between" style={{ marginBottom: 3 }}>
+              <div key={cat} style={{ fontSize: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                   <span style={{ color: 'var(--text2)' }}>{cat}</span>
                   <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{done}/15</span>
                 </div>
@@ -88,25 +104,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <h3 style={styles.sectionTitle}>🚀 Quick Access</h3>
-      <div className="grid-3" style={{ marginTop: 12 }}>
+      {/* Quick Access */}
+      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>🚀 Quick Access</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: cols3, gap: '1rem' }}>
         {modules.map(m => (
-          <Link to={m.link} key={m.title} className="card" style={{ ...styles.moduleCard, borderLeft: `4px solid ${m.color}` }}>
-            <h4 style={{ fontWeight: 700, marginBottom: 6 }}>{m.title}</h4>
-            <p style={{ fontSize: 13, color: 'var(--text2)' }}>{m.desc}</p>
+          <Link to={m.link} key={m.title} className="card" style={{ borderLeft: `4px solid ${m.color}`, cursor: 'pointer' }}>
+            <h4 style={{ fontWeight: 700, marginBottom: 6, fontSize: '0.95rem' }}>{m.title}</h4>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text2)' }}>{m.desc}</p>
           </Link>
         ))}
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: { maxWidth: 1200, margin: '0 auto', padding: '24px 16px' },
-  welcome: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 },
-  greeting: { fontSize: 26, fontWeight: 800 },
-  streak: { background: 'var(--bg3)', padding: '8px 16px', borderRadius: 20, fontWeight: 700, fontSize: 14, border: '1px solid var(--border)' },
-  statCard: { textAlign: 'center', padding: 20, transition: 'transform 0.2s', cursor: 'pointer' },
-  sectionTitle: { fontSize: 18, fontWeight: 700 },
-  moduleCard: { padding: 20, transition: 'transform 0.2s', cursor: 'pointer' }
-};
