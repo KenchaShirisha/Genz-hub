@@ -15,6 +15,7 @@ const server = http.createServer(app);
 const allowedOrigins = [
   'http://localhost:3000',
   'https://genzhub1.vercel.app',
+  /\.vercel\.app$/,
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
