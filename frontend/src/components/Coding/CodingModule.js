@@ -160,8 +160,8 @@ export default function CodingModule() {
 }
 
 const styles = {
-  page: { display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' },
-  sidebar: { width: 300, borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', background: 'var(--bg2)', flexShrink: 0 },
+  page: {},
+  sidebar: { display: 'flex', flexDirection: 'column' },
   title: { padding: '16px 16px 8px', fontSize: 16, fontWeight: 700 },
   filters: { padding: '0 12px 12px' },
   problemList: { flex: 1, overflowY: 'auto', padding: '0 8px 8px' },

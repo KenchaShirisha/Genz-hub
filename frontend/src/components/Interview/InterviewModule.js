@@ -128,8 +128,8 @@ export default function InterviewModule() {
 }
 
 const styles = {
-  page: { display: 'flex', minHeight: 'calc(100vh - 60px)' },
-  sidebar: { width: 220, borderRight: '1px solid var(--border)', background: 'var(--bg2)', padding: '16px 8px', flexShrink: 0, overflowY: 'auto' },
+  page: {},
+  sidebar: { overflowY: 'auto' },
   title: { fontSize: 15, fontWeight: 700, padding: '0 8px 12px' },
   groupLabel: { fontSize: 10, fontWeight: 700, color: 'var(--text2)', letterSpacing: 1, padding: '4px 8px', textTransform: 'uppercase' },
   catBtn: { display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '8px 10px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--text)', textAlign: 'left', transition: 'all 0.15s', marginBottom: 2 },

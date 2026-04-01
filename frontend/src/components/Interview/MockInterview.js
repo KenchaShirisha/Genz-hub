@@ -162,8 +162,8 @@ export default function MockInterview() {
 }
 
 const styles = {
-  page: { display: 'flex', minHeight: 'calc(100vh - 60px)', gap: 0 },
-  main: { flex: 1, padding: '24px 20px', overflowY: 'auto' },
+  page: {},
+  main: { flex: 1, padding: '1.5rem 1.25rem', overflowY: 'auto' },
   topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 },
   scoreBox: { display: 'flex', gap: 16, background: 'var(--bg2)', padding: '8px 16px', borderRadius: 20, border: '1px solid var(--border)', fontSize: 14, fontWeight: 600 },
   questionCard: { padding: 24 },
@@ -176,6 +176,6 @@ const styles = {
   correctAnswer: { background: '#d1fae5', borderRadius: 8, padding: 14, marginTop: 12 },
   rateButtons: { marginTop: 16 },
   empty: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, color: 'var(--text2)' },
-  historyPanel: { width: 260, borderLeft: '1px solid var(--border)', background: 'var(--bg2)', padding: 16, overflowY: 'auto', flexShrink: 0 },
+  historyPanel: {},
   historyItem: { background: 'var(--bg3)', borderRadius: 6, padding: '8px 10px', marginBottom: 8, paddingLeft: 10 }
 };
