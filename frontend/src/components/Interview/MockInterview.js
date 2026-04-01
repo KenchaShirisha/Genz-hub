@@ -58,7 +58,7 @@ export default function MockInterview() {
   const accuracy = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
 
   return (
-    <div style={styles.page}>
+    <div style={styles.page} className="mock-layout">
       <div style={styles.main}>
         <div style={styles.topBar}>
           <h2 style={{ fontSize: 22, fontWeight: 700 }}>🎤 Mock Interview</h2>
@@ -144,7 +144,7 @@ export default function MockInterview() {
         )}
       </div>
 
-      <div style={styles.historyPanel}>
+      <div style={styles.historyPanel} className="mock-history">
         <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>📋 Session History</h3>
         {history.length === 0 ? (
           <p style={{ color: 'var(--text2)', fontSize: 13 }}>No questions answered yet</p>

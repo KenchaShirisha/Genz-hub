@@ -47,8 +47,8 @@ export default function InterviewModule() {
   const allCategories = [...CATEGORIES.web, ...CATEGORIES.programming];
 
   return (
-    <div style={styles.page}>
-      <div style={styles.sidebar}>
+    <div style={styles.page} className="interview-layout">
+      <div style={styles.sidebar} className="interview-sidebar">
         <h2 style={styles.title}>🎯 Interview Prep</h2>
         <div style={{ padding: '0 8px 8px' }}>
           <p style={styles.groupLabel}>WEB</p>

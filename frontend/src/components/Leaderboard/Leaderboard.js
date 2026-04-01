@@ -49,14 +49,14 @@ export default function Leaderboard() {
       )}
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        <table style={styles.table}>
+        <table style={styles.table} className="leaderboard-table">
           <thead>
             <tr style={styles.thead}>
               <th style={styles.th}>Rank</th>
               <th style={styles.th}>User</th>
-              <th style={styles.th}>💻 Coding</th>
-              <th style={styles.th}>📝 Quiz</th>
-              <th style={styles.th}>🎯 Interview</th>
+              <th style={styles.th} className="hide-mobile">💻 Coding</th>
+              <th style={styles.th} className="hide-mobile">📝 Quiz</th>
+              <th style={styles.th} className="hide-mobile">🎯 Interview</th>
               <th style={styles.th}>⭐ Total</th>
             </tr>
           </thead>
@@ -77,9 +77,9 @@ export default function Leaderboard() {
                     </span>
                   </div>
                 </td>
-                <td style={styles.td}>{u.codingPoints}</td>
-                <td style={styles.td}>{u.quizScore}</td>
-                <td style={styles.td}>{u.interviewCompleted}</td>
+                <td style={styles.td} className="hide-mobile">{u.codingPoints}</td>
+                <td style={styles.td} className="hide-mobile">{u.quizScore}</td>
+                <td style={styles.td} className="hide-mobile">{u.interviewCompleted}</td>
                 <td style={{ ...styles.td, fontWeight: 800, color: 'var(--primary)', fontSize: 16 }}>{u.totalScore}</td>
               </tr>
             ))}

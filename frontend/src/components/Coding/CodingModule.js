@@ -52,8 +52,8 @@ export default function CodingModule() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.sidebar}>
+    <div style={styles.page} className="coding-layout">
+      <div style={styles.sidebar} className="coding-sidebar">
         <h2 style={styles.title}>💻 Coding Practice</h2>
         <div style={styles.filters}>
           <input placeholder="🔍 Search problems..." value={filters.search}

@@ -80,15 +80,15 @@ export default function Home() {
 
 const styles = {
   page: { minHeight: '100vh', background: 'var(--bg)' },
-  nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 40px', borderBottom: '1px solid var(--border)', background: 'var(--bg2)' },
+  nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg2)', flexWrap: 'wrap', gap: 10 },
   logo: { fontSize: 22, fontWeight: 800, color: 'var(--primary)' },
-  hero: { textAlign: 'center', padding: '80px 20px 60px', maxWidth: 700, margin: '0 auto' },
+  hero: { textAlign: 'center', padding: '60px 20px 40px', maxWidth: 700, margin: '0 auto' },
   badge: { display: 'inline-block', background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 20, padding: '6px 16px', fontSize: 13, fontWeight: 600, color: 'var(--primary)', marginBottom: 20 },
-  heroTitle: { fontSize: 48, fontWeight: 900, lineHeight: 1.2, marginBottom: 16 },
+  heroTitle: { fontSize: 'clamp(28px, 6vw, 48px)', fontWeight: 900, lineHeight: 1.2, marginBottom: 16 },
   heroSub: { fontSize: 18, color: 'var(--text2)', lineHeight: 1.7, marginBottom: 32 },
   stats: { display: 'flex', justifyContent: 'center', gap: 32, marginTop: 40, flexWrap: 'wrap' },
   stat: { textAlign: 'center' },
-  features: { padding: '60px 40px', maxWidth: 1100, margin: '0 auto' },
+  features: { padding: '40px 16px', maxWidth: 1100, margin: '0 auto' },
   featureCard: { padding: 28, transition: 'transform 0.2s' },
   cta: { textAlign: 'center', padding: '60px 20px', background: 'var(--bg2)', borderTop: '1px solid var(--border)' },
   footer: { textAlign: 'center', padding: '20px', borderTop: '1px solid var(--border)' }
