@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # ⚡ GenZ Productivity, Coding & Interview Preparation Hub
 
 A full-stack MERN application for placement preparation with 165+ interview questions, coding practice, mock interviews, quizzes, and leaderboard.
@@ -166,4 +166,3 @@ Frontend runs on: http://localhost:3000
 **Quiz**: category, question, options[], correctAnswer, explanation, difficulty
 =======
 # Genz-hub
->>>>>>> 320053285a2d734426606759975797ccaa30a900
