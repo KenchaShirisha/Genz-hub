@@ -20,99 +20,123 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
+  const isMobile = width < 1024;
   const handleLogout = () => { logout(); navigate('/'); };
 
   return (
     <>
-      <nav style={styles.nav}>
-        <Link to="/dashboard" style={styles.logo}>⚡ GenZ Hub</Link>
+      {/* NAV BAR */}
+      <nav style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 1rem',
+        height: '3.75rem',
+        background: 'var(--bg2)',
+        borderBottom: '1px solid var(--border)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        width: '100%',
+        boxSizing: 'border-box',
+      }}>
+        {/* Logo */}
+        <Link to="/dashboard" style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--primary)', whiteSpace: 'nowrap', marginRight: '0.75rem', flexShrink: 0 }}>
+          ⚡ GenZ Hub
+        </Link>
 
-        {/* Desktop — hidden on mobile via CSS */}
-        <div className="nb-desktop">
-          {links.map(l => (
-            <Link key={l.to} to={l.to} style={{
-              ...styles.link,
-              ...(location.pathname === l.to ? styles.activeLink : {})
-            }}>
-              {l.label}
-            </Link>
-          ))}
-        </div>
+        {/* Desktop links */}
+        {!isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
+            {links.map(l => (
+              <Link key={l.to} to={l.to} style={{
+                padding: '0.375rem 0.625rem',
+                borderRadius: '0.5rem',
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                color: location.pathname === l.to ? 'var(--primary)' : 'var(--text2)',
+                background: location.pathname === l.to ? 'var(--bg3)' : 'transparent',
+                whiteSpace: 'nowrap',
+              }}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        )}
 
-        <div style={styles.right}>
-          <button onClick={toggleTheme} style={styles.iconBtn}>
+        {/* Right side */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', flexShrink: 0 }}>
+          <button onClick={toggleTheme} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', padding: '0.375rem' }}>
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
-          <Link to="/profile" style={styles.avatar}>
-            {user?.avatar
-              ? <img src={user.avatar} alt="avatar" style={styles.avatarImg} />
-              : getInitials(user?.name)}
+          <Link to="/profile" style={{ width: '2rem', height: '2rem', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, overflow: 'hidden', flexShrink: 0 }}>
+            {user?.avatar ? <img src={user.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(user?.name)}
           </Link>
-          {/* Logout — hidden on mobile via CSS */}
-          <button onClick={handleLogout} className="nb-logout-btn" style={{ ...styles.iconBtn, color: '#ef4444' }}>
-            Logout
-          </button>
-          {/* Hamburger — shown only on mobile via CSS */}
-          <button className="nb-hamburger" style={styles.iconBtn} onClick={() => setMenuOpen(o => !o)}>
-            {menuOpen ? '✕' : '☰'}
-          </button>
+          {!isMobile && (
+            <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem', padding: '0.375rem 0.625rem', color: '#ef4444', fontWeight: 600 }}>
+              Logout
+            </button>
+          )}
+          {isMobile && (
+            <button onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', padding: '0.25rem 0.5rem', color: 'var(--text)', fontWeight: 700, lineHeight: 1 }}>
+              {menuOpen ? '✕' : '☰'}
+            </button>
+          )}
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div style={styles.mobileMenu}>
+      {/* Mobile dropdown menu */}
+      {isMobile && menuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '3.75rem',
+          left: 0,
+          right: 0,
+          background: 'var(--bg2)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 0.5rem 2rem rgba(0,0,0,0.3)',
+          borderBottom: '3px solid var(--primary)',
+        }}>
           {links.map(l => (
             <Link key={l.to} to={l.to}
-              style={{ ...styles.mobileLink, ...(location.pathname === l.to ? styles.mobileLinkActive : {}) }}
-              onClick={() => setMenuOpen(false)}>
+              onClick={() => setMenuOpen(false)}
+              style={{
+                padding: '1rem 1.5rem',
+                fontSize: '1rem',
+                fontWeight: location.pathname === l.to ? 700 : 500,
+                color: location.pathname === l.to ? 'var(--primary)' : 'var(--text)',
+                background: location.pathname === l.to ? 'var(--bg3)' : 'transparent',
+                borderBottom: '1px solid var(--border)',
+                display: 'block',
+              }}>
               {l.label}
             </Link>
           ))}
-          <button onClick={handleLogout} style={styles.mobileLogout}>🚪 Logout</button>
+          <button onClick={handleLogout} style={{
+            padding: '1rem 1.5rem',
+            fontSize: '1rem',
+            fontWeight: 600,
+            color: '#ef4444',
+            background: 'none',
+            border: 'none',
+            textAlign: 'left',
+            cursor: 'pointer',
+          }}>
+            🚪 Logout
+          </button>
         </div>
       )}
     </>
   );
 }
-
-const styles = {
-  nav: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0 1rem',
-    height: '3.75rem',
-    background: 'var(--bg2)',
-    borderBottom: '1px solid var(--border)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-    width: '100%',
-  },
-  logo: { fontWeight: 800, fontSize: '1.25rem', color: 'var(--primary)', whiteSpace: 'nowrap', marginRight: '0.5rem' },
-  link: { padding: '0.375rem 0.625rem', borderRadius: '0.5rem', fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text2)', whiteSpace: 'nowrap', transition: 'all 0.2s' },
-  activeLink: { background: 'var(--bg3)', color: 'var(--primary)', fontWeight: 600 },
-  right: { display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', flexShrink: 0 },
-  iconBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', padding: '0.375rem 0.625rem', borderRadius: '0.5rem', color: 'var(--text)', fontWeight: 500, display: 'flex', alignItems: 'center' },
-  avatar: { width: '2.125rem', height: '2.125rem', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8125rem', fontWeight: 700, overflow: 'hidden', flexShrink: 0 },
-  avatarImg: { width: '100%', height: '100%', objectFit: 'cover' },
-  mobileMenu: {
-    position: 'fixed',
-    top: '3.75rem',
-    left: 0,
-    right: 0,
-    background: 'var(--bg2)',
-    zIndex: 999,
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '0 0.5rem 1.5rem rgba(0,0,0,0.25)',
-    borderBottom: '2px solid var(--primary)',
-  },
-  mobileLink: { padding: '1rem 1.5rem', fontSize: '1rem', fontWeight: 500, color: 'var(--text)', borderBottom: '1px solid var(--border)', display: 'block' },
-  mobileLinkActive: { color: 'var(--primary)', fontWeight: 700, background: 'var(--bg3)' },
-  mobileLogout: { padding: '1rem 1.5rem', fontSize: '1rem', fontWeight: 600, color: '#ef4444', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' },
-};
