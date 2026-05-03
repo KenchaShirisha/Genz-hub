@@ -2,6 +2,7 @@
   "name": "genz-hub-frontend",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://kenchashirisha.github.io/Genz-hub",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -14,11 +15,21 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "proxy": "http://localhost:5000",
   "browserslist": {
-    "production": [">0.2%", "not dead"],
-    "development": ["last 1 chrome version"]
+    "production": [
+      ">0.2%",
+      "not dead"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }

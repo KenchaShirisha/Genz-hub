@@ -6,6 +6,15 @@
     <meta name="theme-color" content="#6c63ff" />
     <meta name="description" content="GenZ Productivity, Coding & Interview Preparation Hub" />
     <title>GenZ Hub 🚀</title>
+    <script>
+      (function(){
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
